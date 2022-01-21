@@ -3,12 +3,20 @@ package com.tomatopay.transactionservice.dto.request;
 import java.math.BigDecimal;
 
 public class TransactionRequest {
-
+    private String id;
     private String accountId;
     private String currency;
     private BigDecimal amount;
     private String description;
     private String transactionType;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getAccountId() {
         return accountId;
