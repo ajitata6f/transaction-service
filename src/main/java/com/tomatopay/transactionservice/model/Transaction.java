@@ -1,5 +1,7 @@
 package com.tomatopay.transactionservice.model;
 
+import com.tomatopay.transactionservice.enums.TransactionType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -22,7 +24,12 @@ public class Transaction implements Serializable {
     @Column(name = "description")
     private String description;
 
-    //@Enumerated(EnumType.STRING)
-    //private TransactionType genre;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", length = 6)
+    private TransactionType transactionType;
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    private Account account;
 
 }
