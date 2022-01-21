@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
@@ -23,29 +24,39 @@ public class TransactionController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TransactionResponse> createTransaction(@Valid @RequestBody TransactionRequest transactionRequest) {
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        TransactionResponse transactionResponse = transactionService.createTransaction(transactionRequest);
+
+        return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
     }
 
     @PutMapping(value = "/{transactionId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable String transactionId, @Valid @RequestBody TransactionRequest transactionRequest) {
+        transactionRequest.setId(transactionId);
+        TransactionResponse transactionResponse = transactionService.updateTransaction(transactionRequest);
 
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> deleteTransaction(@PathVariable String transactionId) {
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+    public ResponseEntity<TransactionResponse> deleteTransaction(@PathVariable UUID transactionId) {
+        TransactionResponse transactionResponse = transactionService.deleteTransaction(transactionId);
+
+        return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> getTransaction(@PathVariable String transactionId) {
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+    public ResponseEntity<TransactionResponse> getTransaction(@PathVariable UUID transactionId) {
+        TransactionResponse transactionResponse = transactionService.getTransaction(transactionId);
+
+        return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
     }
 
     @GetMapping(params = {"page", "size"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<TransactionResponse>> getTransactions(@RequestParam(value = "page", required = false, defaultValue = "1") int page, @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+    public ResponseEntity<List<TransactionResponse>> getTransactions(@RequestParam(value = "page", required = false, defaultValue = "1") int page, @RequestParam(value = "size", required = false, defaultValue = "10") int pageSize) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        List<TransactionResponse> transactions = transactionService.getTransactions(page, pageSize);
+
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
 }
