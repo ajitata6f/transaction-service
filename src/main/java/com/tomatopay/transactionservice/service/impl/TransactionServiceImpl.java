@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 @Transactional
 @Service
@@ -45,7 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
         transaction.setAccount(account);
 
-        CompletableFuture<TransactionResponse> future = CompletableFuture.supplyAsync(() -> {
+        return CompletableFuture.supplyAsync(() -> {
             if(TransactionType.CREDIT.equals(transaction.getTransactionType())) {
                 BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
                 account.setBalance(newBalance);
@@ -63,9 +62,7 @@ public class TransactionServiceImpl implements TransactionService {
                     throw new InsufficientFundsException("Sorry, insufficient funds");
                 }
             }
-        });
-
-        return future.get();
+        }).get();
     }
 
     @Override
@@ -97,7 +94,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionResponse deleteTransaction(Integer id) {
+    public TransactionResponse deleteTransaction(String id) {
         Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
 
         transactionRepository.delete(transaction);
@@ -106,7 +103,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionResponse getTransaction(Integer id) {
+    public TransactionResponse getTransaction(String id) {
         Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
 
         return modelMapper.map(transaction, TransactionResponse.class);

@@ -14,9 +14,9 @@ public interface TransactionService {
 
     TransactionResponse updateTransaction(TransactionUpdateRequest transactionRequest);
 
-    TransactionResponse deleteTransaction(Integer id);
+    TransactionResponse deleteTransaction(String id);
 
-    TransactionResponse getTransaction(Integer id);
+    TransactionResponse getTransaction(String id);
 
     Page<Transaction> getTransactions(Integer page, Integer pageSize);
 
