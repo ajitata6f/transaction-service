@@ -1,6 +1,7 @@
 package com.tomatopay.transactionservice.controller;
 
-import com.tomatopay.transactionservice.dto.request.TransactionRequest;
+import com.tomatopay.transactionservice.dto.request.TransactionCreateRequest;
+import com.tomatopay.transactionservice.dto.request.TransactionUpdateRequest;
 import com.tomatopay.transactionservice.dto.response.TransactionResponse;
 import com.tomatopay.transactionservice.model.Transaction;
 import com.tomatopay.transactionservice.service.TransactionService;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/transactions")
@@ -23,16 +25,16 @@ public class TransactionController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> createTransaction(@Valid @RequestBody TransactionRequest transactionRequest) {
+    public ResponseEntity<TransactionResponse> createTransaction(@Valid @RequestBody TransactionCreateRequest transactionRequest) throws ExecutionException, InterruptedException {
         TransactionResponse transactionResponse = transactionService.createTransaction(transactionRequest);
 
         return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
     }
 
     @PutMapping(value = "/{transactionId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable int transactionId, @Valid @RequestBody TransactionRequest transactionRequest) {
-        transactionRequest.setId(transactionId);
-        TransactionResponse transactionResponse = transactionService.updateTransaction(transactionRequest);
+    public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable int transactionId, @Valid @RequestBody TransactionUpdateRequest transactionUpdateRequest) {
+        transactionUpdateRequest.setId(transactionId);
+        TransactionResponse transactionResponse = transactionService.updateTransaction(transactionUpdateRequest);
 
         return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
     }
@@ -51,8 +53,8 @@ public class TransactionController {
         return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
     }
 
-    @GetMapping(params = {"page", "size"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<Transaction>> getTransactions(@RequestParam(value = "page", required = false, defaultValue = "1") int page, @RequestParam(value = "size", required = false, defaultValue = "10") int pageSize) {
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<Transaction>> getTransactions(@RequestParam(value = "page", required = false, defaultValue = "0") int page, @RequestParam(value = "size", required = false, defaultValue = "10") int pageSize) {
 
         Page<Transaction> transactions = transactionService.getTransactions(page, pageSize);
 
