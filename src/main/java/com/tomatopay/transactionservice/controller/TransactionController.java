@@ -32,7 +32,7 @@ public class TransactionController {
     }
 
     @PutMapping(value = "/{transactionId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable int transactionId, @Valid @RequestBody TransactionUpdateRequest transactionUpdateRequest) {
+    public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable String transactionId, @Valid @RequestBody TransactionUpdateRequest transactionUpdateRequest) {
         transactionUpdateRequest.setId(transactionId);
         TransactionResponse transactionResponse = transactionService.updateTransaction(transactionUpdateRequest);
 
@@ -40,14 +40,14 @@ public class TransactionController {
     }
 
     @DeleteMapping(value = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> deleteTransaction(@PathVariable Integer transactionId) {
+    public ResponseEntity<TransactionResponse> deleteTransaction(@PathVariable String transactionId) {
         TransactionResponse transactionResponse = transactionService.deleteTransaction(transactionId);
 
         return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> getTransaction(@PathVariable Integer transactionId) {
+    public ResponseEntity<TransactionResponse> getTransaction(@PathVariable String transactionId) {
         TransactionResponse transactionResponse = transactionService.getTransaction(transactionId);
 
         return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
