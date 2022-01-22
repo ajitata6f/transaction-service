@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransactionResponse {
 
-    private Integer id;
+    private String id;
     private String currency;
     private BigDecimal amount;
     private String description;
@@ -19,11 +19,11 @@ public class TransactionResponse {
     @JsonProperty("type")
     private String transactionType;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
