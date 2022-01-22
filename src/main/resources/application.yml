@@ -2,19 +2,16 @@ server:
   port: 8080
 spring:
   datasource:
-    url: jdbc:h2:mem:transactiondb;DB_CLOSE_ON_EXIT=FALSE;IGNORECASE=TRUE
-    username: admin
-    password: admin
-    driverClassName: org.h2.Driver
+    url: jdbc:postgresql://localhost:5432/transactiondb
+    username: postgres
+    password: 12345
+    driverClassName: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show_sql: true
-    database: H2
-    database-platform: org.hibernate.dialect.H2Dialect
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
   sql:
     init:
-      mode: always
-  h2:
-    console:
-      enabled: true
+      mode: never
