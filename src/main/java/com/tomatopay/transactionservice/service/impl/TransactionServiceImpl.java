@@ -11,11 +11,13 @@ import com.tomatopay.transactionservice.repository.AccountRepository;
 import com.tomatopay.transactionservice.repository.TransactionRepository;
 import com.tomatopay.transactionservice.service.TransactionService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Transactional
 @Service
@@ -63,23 +65,53 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public TransactionResponse updateTransaction(TransactionRequest transactionRequest) {
+        Transaction oldTransaction = transactionRepository.findById(transactionRequest.getId()).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
+        Account account = oldTransaction.getAccount();
 
-        return null;
+        Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
+        transaction.setId(oldTransaction.getId());
+        transaction.setAccount(account);
+
+        if(TransactionType.CREDIT.equals(transaction.getTransactionType())) {
+            BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
+            account.setBalance(newBalance);
+
+            accountRepository.save(account);
+            return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
+        }else {
+            if(account.getBalance().compareTo(transaction.getAmount()) > 0) {
+                BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
+                account.setBalance(newBalance);
+
+                accountRepository.save(account);
+                return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
+            }else {
+                throw new InsufficientFundsException("Sorry, insufficient funds");
+            }
+        }
     }
 
     @Override
     public TransactionResponse deleteTransaction(Integer id) {
-        return null;
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
+
+        transactionRepository.delete(transaction);
+
+        return new TransactionResponse();
     }
 
     @Override
     public TransactionResponse getTransaction(Integer id) {
-        return null;
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
+
+        return modelMapper.map(transaction, TransactionResponse.class);
     }
 
     @Override
-    public List<TransactionResponse> getTransactions(Integer page, Integer pageSize) {
-        return null;
+    public Page<Transaction> getTransactions(Integer page, Integer pageSize) {
+        Pageable paging = PageRequest.of(page, pageSize);
+
+        return transactionRepository.findAll(paging);
     }
 
 }

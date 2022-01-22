@@ -2,9 +2,8 @@ package com.tomatopay.transactionservice.service;
 
 import com.tomatopay.transactionservice.dto.request.TransactionRequest;
 import com.tomatopay.transactionservice.dto.response.TransactionResponse;
-
-import java.util.List;
-import java.util.UUID;
+import com.tomatopay.transactionservice.model.Transaction;
+import org.springframework.data.domain.Page;
 
 public interface TransactionService {
 
@@ -12,10 +11,10 @@ public interface TransactionService {
 
     TransactionResponse updateTransaction(TransactionRequest transactionRequest);
 
-    TransactionResponse deleteTransaction(UUID id);
+    TransactionResponse deleteTransaction(Integer id);
 
-    TransactionResponse getTransaction(UUID id);
+    TransactionResponse getTransaction(Integer id);
 
-    List<TransactionResponse>  getTransactions(Integer page, Integer pageSize);
+    Page<Transaction> getTransactions(Integer page, Integer pageSize);
 
 }
