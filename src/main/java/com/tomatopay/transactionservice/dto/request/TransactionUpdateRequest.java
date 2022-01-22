@@ -1,9 +1,9 @@
 package com.tomatopay.transactionservice.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tomatopay.transactionservice.annotations.ValidTransactionType;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public class TransactionUpdateRequest {
@@ -21,6 +21,7 @@ public class TransactionUpdateRequest {
     private String description;
 
     @JsonProperty("type")
+    @ValidTransactionType(regexp = "CREDIT|DEBIT")
     @NotEmpty(message = "Transaction type cannot be empty")
     private String transactionType;
 
