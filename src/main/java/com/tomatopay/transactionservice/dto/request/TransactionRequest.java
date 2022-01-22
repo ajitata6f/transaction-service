@@ -1,28 +1,32 @@
 package com.tomatopay.transactionservice.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigDecimal;
 
 public class TransactionRequest {
-    private String id;
-    private String accountId;
+    private Integer id;
+    private Integer accountId;
     private String currency;
     private BigDecimal amount;
     private String description;
+
+    @JsonProperty("type")
     private String transactionType;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getAccountId() {
+    public Integer getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(String accountId) {
+    public void setAccountId(Integer accountId) {
         this.accountId = accountId;
     }
 
