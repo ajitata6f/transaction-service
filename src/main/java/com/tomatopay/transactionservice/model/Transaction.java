@@ -1,6 +1,7 @@
 package com.tomatopay.transactionservice.model;
 
 import com.tomatopay.transactionservice.enums.TransactionType;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,8 +12,10 @@ import java.math.BigDecimal;
 public class Transaction implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
+    @Column(name = "id", length = 36)
+    private String id;
 
     @Column(name = "currency")
     private String currency;
@@ -31,11 +34,11 @@ public class Transaction implements Serializable {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

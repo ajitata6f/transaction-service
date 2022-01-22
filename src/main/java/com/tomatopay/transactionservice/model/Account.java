@@ -1,6 +1,6 @@
 package com.tomatopay.transactionservice.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,8 +12,10 @@ import java.util.*;
 public class Account implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
+    @Column(name = "id", length = 36)
+    private String id;
 
     @Column(name = "balance")
     private BigDecimal balance;
@@ -24,15 +26,15 @@ public class Account implements Serializable {
     public Account() {
     }
 
-    public Account(Integer id) {
+    public Account(String id) {
         this.id = id;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -60,4 +62,5 @@ public class Account implements Serializable {
                 ", transactions=" + transactions +
                 '}';
     }
+
 }
