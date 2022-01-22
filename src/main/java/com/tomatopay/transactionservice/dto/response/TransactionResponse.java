@@ -2,25 +2,28 @@ package com.tomatopay.transactionservice.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tomatopay.transactionservice.model.Account;
 
 import java.math.BigDecimal;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransactionResponse {
 
-    private int id;
+    private Integer id;
     private String currency;
     private BigDecimal amount;
     private String description;
 
+    private Account account;
+
     @JsonProperty("type")
     private String transactionType;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -50,6 +53,14 @@ public class TransactionResponse {
 
     public String getTransactionType() {
         return transactionType;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public void setTransactionType(String transactionType) {
