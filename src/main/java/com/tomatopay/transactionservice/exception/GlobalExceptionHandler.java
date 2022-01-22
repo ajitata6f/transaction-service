@@ -15,12 +15,30 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({TransactionNotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleNotFoundException(TransactionNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleTransactionNotFoundException(TransactionNotFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
         errorResponse.setErrorMessage(ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(errorResponse);
+    }
+
+    @ExceptionHandler({AccountNotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleAccountNotFoundException(AccountNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setErrorMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(errorResponse);
+    }
+
+    @ExceptionHandler({InsufficientFundsException.class})
+    public ResponseEntity<ErrorResponse> handleAccountNotFoundException(InsufficientFundsException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setErrorMessage(ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(errorResponse);
     }
 
     @Override
