@@ -1,6 +1,7 @@
 package com.tomatopay.transactionservice.service.impl;
 
-import com.tomatopay.transactionservice.dto.request.TransactionRequest;
+import com.tomatopay.transactionservice.dto.request.TransactionCreateRequest;
+import com.tomatopay.transactionservice.dto.request.TransactionUpdateRequest;
 import com.tomatopay.transactionservice.dto.response.TransactionResponse;
 import com.tomatopay.transactionservice.enums.TransactionType;
 import com.tomatopay.transactionservice.exception.AccountNotFoundException;
@@ -14,10 +15,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Transactional
 @Service
@@ -34,37 +39,37 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionResponse createTransaction(TransactionRequest transactionRequest) {
+    public TransactionResponse createTransaction(TransactionCreateRequest transactionRequest) throws ExecutionException, InterruptedException {
         Account account = accountRepository.findById(transactionRequest.getAccountId()).orElseThrow(() -> new AccountNotFoundException("Sorry, account does not exist"));
 
-        Transaction transaction = new Transaction();
-        transaction.setAmount(transactionRequest.getAmount());
+        Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
         transaction.setAccount(account);
-        transaction.setCurrency(transactionRequest.getCurrency());
-        transaction.setDescription(transactionRequest.getDescription());
-        transaction.setTransactionType(TransactionType.valueOf(transactionRequest.getTransactionType()));
 
-        if(TransactionType.CREDIT.equals(transaction.getTransactionType())) {
-            BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
-            account.setBalance(newBalance);
-
-            accountRepository.save(account);
-            return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
-        }else {
-            if(account.getBalance().compareTo(transaction.getAmount()) > 0) {
-                BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
+        CompletableFuture<TransactionResponse> future = CompletableFuture.supplyAsync(() -> {
+            if(TransactionType.CREDIT.equals(transaction.getTransactionType())) {
+                BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
                 account.setBalance(newBalance);
 
                 accountRepository.save(account);
                 return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
             }else {
-                throw new InsufficientFundsException("Sorry, insufficient funds");
+                if(account.getBalance().compareTo(transaction.getAmount()) > 0) {
+                    BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
+                    account.setBalance(newBalance);
+
+                    accountRepository.save(account);
+                    return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
+                }else {
+                    throw new InsufficientFundsException("Sorry, insufficient funds");
+                }
             }
-        }
+        });
+
+        return future.get();
     }
 
     @Override
-    public TransactionResponse updateTransaction(TransactionRequest transactionRequest) {
+    public TransactionResponse updateTransaction(TransactionUpdateRequest transactionRequest) {
         Transaction oldTransaction = transactionRepository.findById(transactionRequest.getId()).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
         Account account = oldTransaction.getAccount();
 
@@ -109,7 +114,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Page<Transaction> getTransactions(Integer page, Integer pageSize) {
-        Pageable paging = PageRequest.of(page, pageSize);
+        Pageable paging = PageRequest.of(page, pageSize, Sort.by("id"));
 
         return transactionRepository.findAll(paging);
     }
