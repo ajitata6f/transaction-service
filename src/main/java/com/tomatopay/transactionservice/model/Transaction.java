@@ -1,12 +1,10 @@
 package com.tomatopay.transactionservice.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.tomatopay.transactionservice.enums.TransactionType;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 @Table(name = "transaction")
