@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 
-public class TransactionCreationRequest {
+public class TransactionCreateRequest {
     private Integer accountId;
     private String currency;
     private BigDecimal amount;
