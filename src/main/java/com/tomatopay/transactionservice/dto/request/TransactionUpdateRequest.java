@@ -2,31 +2,41 @@ package com.tomatopay.transactionservice.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public class TransactionUpdateRequest {
-    private Integer id;
-    private Integer accountId;
+    @NotEmpty(message = "Please select transaction")
+    private String id;
+
+    @NotEmpty(message = "Please select transaction account")
+    private String accountId;
+
+    @NotEmpty(message = "Please select transaction currency")
     private String currency;
+
     private BigDecimal amount;
+
     private String description;
 
     @JsonProperty("type")
+    @NotEmpty(message = "Transaction type cannot be empty")
     private String transactionType;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Integer getAccountId() {
+    public String getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(Integer accountId) {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
 
