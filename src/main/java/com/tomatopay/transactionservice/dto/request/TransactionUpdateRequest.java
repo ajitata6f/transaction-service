@@ -7,7 +7,7 @@ import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 
 public class TransactionUpdateRequest {
-    @NotEmpty(message = "Please select transaction")
+
     private String id;
 
     @NotEmpty(message = "Please select transaction account")
