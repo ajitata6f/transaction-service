@@ -2,7 +2,9 @@ package com.tomatopay.transactionservice.service.impl;
 
 import com.tomatopay.transactionservice.dto.request.TransactionCreateRequest;
 import com.tomatopay.transactionservice.dto.request.TransactionUpdateRequest;
+import com.tomatopay.transactionservice.dto.response.TransactionCreateResponse;
 import com.tomatopay.transactionservice.dto.response.TransactionResponse;
+import com.tomatopay.transactionservice.dto.response.TransactionUpdateResponse;
 import com.tomatopay.transactionservice.enums.TransactionType;
 import com.tomatopay.transactionservice.exception.AccountNotFoundException;
 import com.tomatopay.transactionservice.exception.InsufficientFundsException;
@@ -38,23 +40,62 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionResponse createTransaction(TransactionCreateRequest transactionRequest) throws ExecutionException, InterruptedException {
+    public TransactionCreateResponse createTransaction(TransactionCreateRequest transactionRequest) throws ExecutionException, InterruptedException {
         Account account = accountRepository.findById(transactionRequest.getAccountId()).orElseThrow(() -> new AccountNotFoundException("Sorry, account does not exist"));
 
         Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
+        transaction.setAccount(account);
 
-        return processTransaction(account, transaction);
+        return CompletableFuture.supplyAsync(() -> {
+            if(TransactionType.CREDIT.equals(transaction.getTransactionType())) {
+                BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
+                account.setBalance(newBalance);
+
+                accountRepository.save(account);
+                return modelMapper.map(transactionRepository.save(transaction), TransactionCreateResponse.class);
+            }else {
+                if(account.getBalance().compareTo(transaction.getAmount()) > 0) {
+                    BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
+                    account.setBalance(newBalance);
+
+                    accountRepository.save(account);
+
+                    return modelMapper.map(transactionRepository.save(transaction), TransactionCreateResponse.class);
+                }else {
+                    throw new InsufficientFundsException("Sorry, insufficient funds");
+                }
+            }
+        }).get();
     }
 
     @Override
-    public TransactionResponse updateTransaction(TransactionUpdateRequest transactionRequest) throws ExecutionException, InterruptedException {
+    public TransactionUpdateResponse updateTransaction(TransactionUpdateRequest transactionRequest) throws ExecutionException, InterruptedException {
         Transaction oldTransaction = transactionRepository.findById(transactionRequest.getId()).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
         Account account = oldTransaction.getAccount();
 
         Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
         transaction.setId(oldTransaction.getId());
 
-        return processTransaction(account, transaction);
+        return CompletableFuture.supplyAsync(() -> {
+            if(TransactionType.CREDIT.equals(transaction.getTransactionType())) {
+                BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
+                account.setBalance(newBalance);
+
+                accountRepository.save(account);
+                return modelMapper.map(transactionRepository.save(transaction), TransactionUpdateResponse.class);
+            }else {
+                if(account.getBalance().compareTo(transaction.getAmount()) > 0) {
+                    BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
+                    account.setBalance(newBalance);
+
+                    accountRepository.save(account);
+
+                    return modelMapper.map(transactionRepository.save(transaction), TransactionUpdateResponse.class);
+                }else {
+                    throw new InsufficientFundsException("Sorry, insufficient funds");
+                }
+            }
+        }).get();
     }
 
     @Override
@@ -67,10 +108,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionResponse getTransaction(String id) {
-        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
-
-        return modelMapper.map(transaction, TransactionResponse.class);
+    public Transaction getTransaction(String id) {
+        return transactionRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
     }
 
     @Override
@@ -78,30 +117,6 @@ public class TransactionServiceImpl implements TransactionService {
         Pageable paging = PageRequest.of(page, pageSize, Sort.by("id"));
 
         return transactionRepository.findAll(paging);
-    }
-
-    private TransactionResponse processTransaction(Account account, Transaction transaction) throws InterruptedException, ExecutionException {
-        transaction.setAccount(account);
-
-        return CompletableFuture.supplyAsync(() -> {
-            if(TransactionType.CREDIT.equals(transaction.getTransactionType())) {
-                BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
-                account.setBalance(newBalance);
-
-                accountRepository.save(account);
-                return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
-            }else {
-                if(account.getBalance().compareTo(transaction.getAmount()) > 0) {
-                    BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
-                    account.setBalance(newBalance);
-
-                    accountRepository.save(account);
-                    return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
-                }else {
-                    throw new InsufficientFundsException("Sorry, insufficient funds");
-                }
-            }
-        }).get();
     }
 
 }
