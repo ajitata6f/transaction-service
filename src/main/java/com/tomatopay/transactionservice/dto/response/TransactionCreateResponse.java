@@ -7,7 +7,7 @@ import com.tomatopay.transactionservice.model.Account;
 import java.math.BigDecimal;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TransactionResponse {
+public class TransactionCreateResponse {
 
     private String id;
     private String currency;
