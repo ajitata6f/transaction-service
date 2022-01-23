@@ -3,6 +3,17 @@
 ## Description
 This repository contains the source code of transaction service api written with Spring & Spring Boot SpringBoot.
 
+## Prerequisite
+- Spring Framework 5.3.15
+- Spring Boot 2.6.3
+- Spring Data JPA
+- Hibernate ORM
+- Hibernate Validation API
+- Model Mapper
+- PostgreSQL
+- JUnit & Mockito
+- Gradle
+
 ## Screens
 There are 5 API endpoints in the transaction-service api:
 * **Post Transaction** - `POST http://localhost:8080/api/v1/transactions`
@@ -65,3 +76,10 @@ docker run -p 8080:8080 ajitata6f/transaction-service
 ```
 
 Please **note** when you build the container image and if postgres is running locally on your system, you will need to provide user credentials in the application.yml file to be able to connect to the database from within the container.
+
+Clone from repository
+-------------------
+
+       $ git clone https://github.com/ajitata6f/transaction-service.git
+
+
