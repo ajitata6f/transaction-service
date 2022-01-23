@@ -41,10 +41,10 @@ public class TransactionController {
     }
 
     @DeleteMapping(value = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteTransaction(@PathVariable String transactionId) {
+    public ResponseEntity<Void> deleteTransaction(@PathVariable String transactionId) {
         transactionService.deleteTransaction(transactionId);
 
-        return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
