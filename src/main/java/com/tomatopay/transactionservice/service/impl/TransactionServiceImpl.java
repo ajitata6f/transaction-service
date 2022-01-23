@@ -42,55 +42,19 @@ public class TransactionServiceImpl implements TransactionService {
         Account account = accountRepository.findById(transactionRequest.getAccountId()).orElseThrow(() -> new AccountNotFoundException("Sorry, account does not exist"));
 
         Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
-        transaction.setAccount(account);
 
-        return CompletableFuture.supplyAsync(() -> {
-            if(TransactionType.CREDIT.equals(transaction.getTransactionType())) {
-                BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
-                account.setBalance(newBalance);
-
-                accountRepository.save(account);
-                return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
-            }else {
-                if(account.getBalance().compareTo(transaction.getAmount()) > 0) {
-                    BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
-                    account.setBalance(newBalance);
-
-                    accountRepository.save(account);
-                    return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
-                }else {
-                    throw new InsufficientFundsException("Sorry, insufficient funds");
-                }
-            }
-        }).get();
+        return processTransaction(account, transaction);
     }
 
     @Override
-    public TransactionResponse updateTransaction(TransactionUpdateRequest transactionRequest) {
+    public TransactionResponse updateTransaction(TransactionUpdateRequest transactionRequest) throws ExecutionException, InterruptedException {
         Transaction oldTransaction = transactionRepository.findById(transactionRequest.getId()).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
         Account account = oldTransaction.getAccount();
 
         Transaction transaction = modelMapper.map(transactionRequest, Transaction.class);
         transaction.setId(oldTransaction.getId());
-        transaction.setAccount(account);
 
-        if(TransactionType.CREDIT.equals(transaction.getTransactionType())) {
-            BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
-            account.setBalance(newBalance);
-
-            accountRepository.save(account);
-            return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
-        }else {
-            if(account.getBalance().compareTo(transaction.getAmount()) > 0) {
-                BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
-                account.setBalance(newBalance);
-
-                accountRepository.save(account);
-                return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
-            }else {
-                throw new InsufficientFundsException("Sorry, insufficient funds");
-            }
-        }
+        return processTransaction(account, transaction);
     }
 
     @Override
@@ -114,6 +78,30 @@ public class TransactionServiceImpl implements TransactionService {
         Pageable paging = PageRequest.of(page, pageSize, Sort.by("id"));
 
         return transactionRepository.findAll(paging);
+    }
+
+    private TransactionResponse processTransaction(Account account, Transaction transaction) throws InterruptedException, ExecutionException {
+        transaction.setAccount(account);
+
+        return CompletableFuture.supplyAsync(() -> {
+            if(TransactionType.CREDIT.equals(transaction.getTransactionType())) {
+                BigDecimal newBalance = account.getBalance().add(transaction.getAmount());
+                account.setBalance(newBalance);
+
+                accountRepository.save(account);
+                return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
+            }else {
+                if(account.getBalance().compareTo(transaction.getAmount()) > 0) {
+                    BigDecimal newBalance = account.getBalance().subtract(transaction.getAmount());
+                    account.setBalance(newBalance);
+
+                    accountRepository.save(account);
+                    return modelMapper.map(transactionRepository.save(transaction), TransactionResponse.class);
+                }else {
+                    throw new InsufficientFundsException("Sorry, insufficient funds");
+                }
+            }
+        }).get();
     }
 
 }

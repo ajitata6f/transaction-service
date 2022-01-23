@@ -32,7 +32,7 @@ public class TransactionController {
     }
 
     @PutMapping(value = "/{transactionId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable String transactionId, @Valid @RequestBody TransactionUpdateRequest transactionUpdateRequest) {
+    public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable String transactionId, @Valid @RequestBody TransactionUpdateRequest transactionUpdateRequest) throws ExecutionException, InterruptedException {
         transactionUpdateRequest.setId(transactionId);
         TransactionResponse transactionResponse = transactionService.updateTransaction(transactionUpdateRequest);
 

@@ -12,7 +12,7 @@ public interface TransactionService {
 
     TransactionResponse createTransaction(TransactionCreateRequest transactionRequest) throws ExecutionException, InterruptedException;
 
-    TransactionResponse updateTransaction(TransactionUpdateRequest transactionRequest);
+    TransactionResponse updateTransaction(TransactionUpdateRequest transactionRequest) throws ExecutionException, InterruptedException;
 
     TransactionResponse deleteTransaction(String id);
 
