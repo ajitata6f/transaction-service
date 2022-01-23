@@ -14,6 +14,9 @@ This repository contains the source code of transaction service api written with
 - JUnit & Mockito
 - Gradle
 
+## Code Structure
+![Code Structure](https://github.com/ajitata6f/transaction-service/blob/main/assets/img/Code_Structure.png?raw=true)
+
 ## Screens
 There are 5 API endpoints in the transaction-service api:
 * **Post Transaction** - `POST http://localhost:8080/api/v1/transactions`
