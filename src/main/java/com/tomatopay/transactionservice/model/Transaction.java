@@ -1,5 +1,6 @@
 package com.tomatopay.transactionservice.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tomatopay.transactionservice.enums.TransactionType;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -28,11 +29,24 @@ public class Transaction implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 6)
+    @JsonProperty("type")
     private TransactionType transactionType;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    public Transaction() {
+    }
+
+    public Transaction(String id, String currency, BigDecimal amount, String description, TransactionType transactionType, Account account) {
+        this.id = id;
+        this.currency = currency;
+        this.amount = amount;
+        this.description = description;
+        this.transactionType = transactionType;
+        this.account = account;
+    }
 
     public String getId() {
         return id;
