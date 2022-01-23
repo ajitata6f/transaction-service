@@ -2,7 +2,9 @@ package com.tomatopay.transactionservice.controller;
 
 import com.tomatopay.transactionservice.dto.request.TransactionCreateRequest;
 import com.tomatopay.transactionservice.dto.request.TransactionUpdateRequest;
+import com.tomatopay.transactionservice.dto.response.TransactionCreateResponse;
 import com.tomatopay.transactionservice.dto.response.TransactionResponse;
+import com.tomatopay.transactionservice.dto.response.TransactionUpdateResponse;
 import com.tomatopay.transactionservice.model.Transaction;
 import com.tomatopay.transactionservice.service.TransactionService;
 import org.springframework.data.domain.Page;
@@ -25,18 +27,18 @@ public class TransactionController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> createTransaction(@Valid @RequestBody TransactionCreateRequest transactionRequest) throws ExecutionException, InterruptedException {
-        TransactionResponse transactionResponse = transactionService.createTransaction(transactionRequest);
+    public ResponseEntity<TransactionCreateResponse> createTransaction(@Valid @RequestBody TransactionCreateRequest transactionRequest) throws ExecutionException, InterruptedException {
+        TransactionCreateResponse transactionCreateResponse = transactionService.createTransaction(transactionRequest);
 
-        return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
+        return new ResponseEntity<>(transactionCreateResponse, HttpStatus.OK);
     }
 
     @PutMapping(value = "/{transactionId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> updateTransaction(@PathVariable String transactionId, @Valid @RequestBody TransactionUpdateRequest transactionUpdateRequest) throws ExecutionException, InterruptedException {
+    public ResponseEntity<TransactionUpdateResponse> updateTransaction(@PathVariable String transactionId, @Valid @RequestBody TransactionUpdateRequest transactionUpdateRequest) throws ExecutionException, InterruptedException {
         transactionUpdateRequest.setId(transactionId);
-        TransactionResponse transactionResponse = transactionService.updateTransaction(transactionUpdateRequest);
+        TransactionUpdateResponse transactionUpdateResponse = transactionService.updateTransaction(transactionUpdateRequest);
 
-        return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
+        return new ResponseEntity<>(transactionUpdateResponse, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -47,10 +49,10 @@ public class TransactionController {
     }
 
     @GetMapping(value = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> getTransaction(@PathVariable String transactionId) {
-        TransactionResponse transactionResponse = transactionService.getTransaction(transactionId);
+    public ResponseEntity<Transaction> getTransaction(@PathVariable String transactionId) {
+        Transaction transaction = transactionService.getTransaction(transactionId);
 
-        return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
+        return new ResponseEntity<>(transaction, HttpStatus.OK);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
