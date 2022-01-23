@@ -3,7 +3,6 @@ package com.tomatopay.transactionservice.controller;
 import com.tomatopay.transactionservice.dto.request.TransactionCreateRequest;
 import com.tomatopay.transactionservice.dto.request.TransactionUpdateRequest;
 import com.tomatopay.transactionservice.dto.response.TransactionCreateResponse;
-import com.tomatopay.transactionservice.dto.response.TransactionResponse;
 import com.tomatopay.transactionservice.dto.response.TransactionUpdateResponse;
 import com.tomatopay.transactionservice.model.Transaction;
 import com.tomatopay.transactionservice.service.TransactionService;
@@ -42,8 +41,8 @@ public class TransactionController {
     }
 
     @DeleteMapping(value = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TransactionResponse> deleteTransaction(@PathVariable String transactionId) {
-        TransactionResponse transactionResponse = transactionService.deleteTransaction(transactionId);
+    public ResponseEntity deleteTransaction(@PathVariable String transactionId) {
+        transactionService.deleteTransaction(transactionId);
 
         return new ResponseEntity<>(transactionResponse, HttpStatus.OK);
     }

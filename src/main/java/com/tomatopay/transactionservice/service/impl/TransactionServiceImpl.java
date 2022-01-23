@@ -3,7 +3,6 @@ package com.tomatopay.transactionservice.service.impl;
 import com.tomatopay.transactionservice.dto.request.TransactionCreateRequest;
 import com.tomatopay.transactionservice.dto.request.TransactionUpdateRequest;
 import com.tomatopay.transactionservice.dto.response.TransactionCreateResponse;
-import com.tomatopay.transactionservice.dto.response.TransactionResponse;
 import com.tomatopay.transactionservice.dto.response.TransactionUpdateResponse;
 import com.tomatopay.transactionservice.enums.TransactionType;
 import com.tomatopay.transactionservice.exception.AccountNotFoundException;
@@ -99,12 +98,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionResponse deleteTransaction(String id) {
+    public void deleteTransaction(String id) {
         Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Sorry, transaction does not exist"));
 
         transactionRepository.delete(transaction);
-
-        return new TransactionResponse();
     }
 
     @Override
