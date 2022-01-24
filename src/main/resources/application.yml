@@ -27,7 +27,7 @@ spring:
       on-profile: test
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
     show_sql: false
     database: H2
   datasource:
