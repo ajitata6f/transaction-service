@@ -56,6 +56,14 @@ public class Transaction implements Serializable {
     public Transaction() {
     }
 
+    public Transaction(String currency, BigDecimal amount, String description, TransactionType transactionType, Account account) {
+        this.currency = currency;
+        this.amount = amount;
+        this.description = description;
+        this.transactionType = transactionType;
+        this.account = account;
+    }
+
     public Transaction(String id, String currency, BigDecimal amount, String description, TransactionType transactionType, Account account) {
         this.id = id;
         this.currency = currency;
