@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS transaction (
    amount DECIMAL(12,2) NOT NULL,
    description TEXT,
    type VARCHAR(6),
+   created_at timestamp NOT NULL,
+   updated_at timestamp,
    PRIMARY KEY (id),
    FOREIGN KEY (account_id) REFERENCES account(id)
 );
