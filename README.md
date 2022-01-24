@@ -69,7 +69,7 @@ You can also use Maven plugin to run the app. Use the below example to run your 
 Command to pull the image:
 
 ```
-docker pull ajitata6f/transaction-service
+docker pull ajitata6f/transaction-service:tag
 ```
 
 Command to run the container :
