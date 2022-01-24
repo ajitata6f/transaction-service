@@ -111,7 +111,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Page<Transaction> getTransactions(Integer page, Integer pageSize) {
-        Pageable paging = PageRequest.of(page, pageSize, Sort.by("id"));
+        Pageable paging = PageRequest.of(page, pageSize, Sort.by(Sort.Direction.DESC,"createdAt"));
 
         return transactionRepository.findAll(paging);
     }
