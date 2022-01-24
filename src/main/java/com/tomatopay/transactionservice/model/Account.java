@@ -54,13 +54,4 @@ public class Account implements Serializable {
         this.transactions = transactions;
     }
 
-    @Override
-    public String toString() {
-        return "Account{" +
-                "id=" + id +
-                ", balance=" + balance +
-                ", transactions=" + transactions +
-                '}';
-    }
-
 }
